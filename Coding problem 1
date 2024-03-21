@@ -1,0 +1,65 @@
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> zAlgorithm(string s) {
+    vector<int> z;
+    int left = 0, right = 0;
+    for (int i = 1; i < s.size(); i++) {
+        if (i >= right) {
+            right = left = i;
+            while (right < s.size() && s[right - i] == s[right]) right++;
+            z.push_back(right - i);
+        } else {
+            if (z[i - left] < right - i) {
+                z.push_back(z[i - left]);
+            } else {
+                left = i;
+                while (right < s.size() && s[right - i] == s[right]) right++;
+                z.push_back(right - i);
+            }
+        }
+    }
+    return z;
+}
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    int testCases;
+    cin >> testCases;
+    
+    while (testCases--) {
+        string text, dna;
+        cin >> text >> dna;
+        
+        auto prefixArray = zAlgorithm(dna + "@" + text);
+        reverse(text.begin(), text.end());
+        reverse(dna.begin(), dna.end());
+        auto suffixArray = zAlgorithm(dna + "@" + text);
+        
+        vector<int> matchingIndices;
+        for (int i = 0; i + dna.size() <= text.size(); i++) {
+            if (prefixArray[dna.size() + 1 + i] + suffixArray[dna.size() + 1 + text.size() - (i + dna.size())] + 1 >= dna.size())
+                matchingIndices.push_back(i);
+        }
+        
+        if (matchingIndices.empty())
+            cout << "No Match!" << endl;
+        else {
+            for (int index : matchingIndices)
+                cout << index << ' ';
+            cout << endl;
+        }
+    }
+    
+    return 0;
+}
